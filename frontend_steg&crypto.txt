@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber-Terminal Interface</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚨 CYBERPUNK THEME VARIABLES 🚨 */
+        :root {
+            --bg-dark: #0a0314;      /* Deep, slightly purplish black */
+            --bg-card: rgba(10, 3, 20, 0.85); /* Semi-transparent panel background */
+            --text-light: #f0f0f0;    /* Primary White Text */
+            --main-blue: #00aaff;      /* Electric Blue */
+            --accent-purple: #b300ff;  /* Vibrant Purple */
+            --status-cyan: #4dc3ff;    /* Bright Cyan for status/glitch */
+            --border-color: #1a0628;    /* Dark purple border */
+            --focus-glow-blue: rgba(0, 170, 255, 0.6); 
+            --focus-glow-purple: rgba(179, 0, 255, 0.6); 
+            --font-code: 'Roboto Mono', monospace;
+        }
+
+        /* General Reset and Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-code);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 25px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: url('photo(html.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
+        }
+        
+        /* Added a subtle overlay to the body to make text more readable */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Darker, more oppressive overlay */
+            z-index: -1;
+        }
+
+        /* Header Styling (High-Contrast Terminal) */
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 0 20px var(--focus-glow-blue); 
+            max-width: 95%;
+            width: 100%;
+        }
+
+        header h1 {
+            color: var(--main-blue);
+            font-size: 2.4em;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--focus-glow-blue);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--accent-purple);
+            font-size: 0.9em;
+        }
+
+        /* Main Content Layout */
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--focus-glow-blue), 0 0 30px var(--focus-glow-purple);
+            padding: 20px;
+        }
+
+        /* Tool Section Styling */
+        .tool-section {
+            flex: 1;
+            min-width: 320px;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            transition: border-color 0.3s ease;
+        }
+
+        .tool-section:hover {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .tool-section h2 {
+            font-size: 1.6em;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed var(--border-color);
+            color: var(--text-light);
+        }
+
+        .cryptography h2 { color: var(--main-blue); }
+        .steganography h2 { color: var(--accent-purple); }
+
+        /* Color the labels like key parameters */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--status-cyan); /* Cyan for variables */
+            font-size: 0.95em;
+        }
+
+        /* Input/Textarea Styling (Console Input) */
+        textarea, input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1em;
+            font-family: var(--font-code);
+            color: var(--status-cyan); /* Input text is Cyan */
+            background-color: var(--bg-dark);
+            caret-color: var(--status-cyan); 
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            border-color: var(--main-blue);
+            box-shadow: 0 0 8px var(--focus-glow-blue);
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Button Group Styling */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Action Button Styling (Neon Commands) */
+        .action-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid; 
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            font-family: var(--font-code);
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.3s;
+        }
+
+        .primary {
+            border-color: var(--main-blue);
+            background-color: var(--main-blue);
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--focus-glow-blue);
+        }
+
+        .primary:hover {
+            background-color: var(--border-color);
+            box-shadow: 0 0 20px var(--focus-glow-blue);
+            transform: translateY(-2px);
+        }
+
+        .secondary {
+            border-color: var(--accent-purple);
+            background-color: var(--accent-purple);
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--focus-glow-purple);
+        }
+        
+        .secondary:hover {
+            background-color: var(--border-color);
+            box-shadow: 0 0 20px var(--focus-glow-purple);
+            transform: translateY(-2px);
+        }
+
+        /* Result Box Styling (Output Console) */
+        .result-box {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+        }
+        
+        /* Cyan Status Text */
+        .status-text {
+            color: var(--status-cyan);
+            background-color: var(--bg-dark);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--status-cyan);
+            text-shadow: 0 0 5px rgba(77, 195, 255, 0.5);
+            word-break: break-all;
+            margin-top: 10px;
+        }
+
+        /* Footer Styling */
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.8em;
+            background: var(--bg-card);
+            border-radius: 6px;
+            border-bottom: 4px solid var(--accent-purple);
+            text-align: center;
+            max-width: 95%;
+            width: 100%;
+        }
+
+        /* Canvas visibility and styling */
+        #stego-canvas.hidden {
+            display: none;
+        }
+
+        #stego-canvas {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--main-blue); 
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            main { flex-direction: column; gap: 25px; }
+            .tool-section { min-width: auto; }
+            .button-group { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Silent Codes: Hide, Protect, Reveal</h1>
+        <p>// STATUS: ACTIVE | INTERFACE: CRYPTO_STEGO_V1.0 | AUTH: SUCCESS</p>
+    </header>
+
+    <main>
+        <section class="tool-section cryptography">
+            <h2>🔒 CRYPTOGRAPHY</h2>
+            <div class="input-group">
+                <label for="crypto-text">PLAINTEXT_DATA::</label>
+                <textarea id="crypto-text" rows="5" placeholder="Enter message to encrypt/decrypt..."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="crypto-key">ENCRYPTION_KEY::</label>
+                <input type="text" id="crypto-key" placeholder="Enter cryptographic key...">
+            </div>
+            <div class="button-group">
+                <button id="encrypt-btn" class="action-btn primary">RUN: ENCODE_DATA</button>
+                <button id="decrypt-btn" class="action-btn secondary">RUN: DECODE_DATA</button>
+            </div>
+            <div class="result-box">
+                <label>OPERATION_OUTPUT:</label>
+                <textarea id="crypto-result" rows="5" readonly placeholder="Output will display here..."></textarea>
+            </div>
+        </section>
+
+        <section class="tool-section steganography">
+            <h2>🔍 STEGANOGRAPHY</h2>
+            <div class="input-group">
+                <label for="stego-file">CARRIER_FILE::</label>
+                <input type="file" id="stego-file" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label for="stego-message">HIDDEN_PAYLOAD::</label>
+                <input type="text" id="stego-message" placeholder="Message to embed/hide...">
+            </div>
+            <div class="button-group">
+                <button id="hide-btn" class="action-btn primary">RUN: EMBED_PAYLOAD</button>
+                <button id="extract-btn" class="action-btn secondary">RUN: EXTRACT_PAYLOAD</button>
+            </div>
+            <div class="result-box">
+                <p style="color: var(--status-cyan);"><strong>LOG_STATUS:</strong></p>
+                <p id="stego-status" class="status-text">[SYSTEM] Awaiting next command...</p>
+                <!-- Canvas and download link will be created dynamically -->
+                <canvas id="stego-canvas" class="hidden"></canvas>
+                <a id="download-link" style="display: none; margin-top: 15px; color: var(--accent-purple); text-decoration: none;">Download Encoded Image</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>// SESSION_LOGGED | CORE: <span style="color: var(--main-blue);">ACCESS_DENIED</span> | END_TIME: [SYSTEM TIME]</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // --- Cryptography Section ---
+            const cryptoTextarea = document.getElementById('crypto-text');
+            const cryptoKeyInput = document.getElementById('crypto-key');
+            const cryptoResultTextarea = document.getElementById('crypto-result');
+            const encryptBtn = document.getElementById('encrypt-btn');
+            const decryptBtn = document.getElementById('decrypt-btn');
+
+            // Simple Vigenère cipher implementation
+            const encryptDecrypt = (text, key, isEncrypt) => {
+                if (!key) return "[ERROR] AUTH_KEY required for CRYPTO operation.";
+                let result = '';
+                const base = 'A'.charCodeAt(0);
+                const a = 'a'.charCodeAt(0);
+                const keyLen = key.length;
+
+                for (let i = 0; i < text.length; i++) {
+                    let char = text[i];
+                    if (/[a-zA-Z]/.test(char)) {
+                        let isUpperCase = char === char.toUpperCase();
+                        let charCode = isUpperCase ? char.charCodeAt(0) - base : char.charCodeAt(0) - a;
+                        let keyChar = key[i % keyLen];
+                        let keyCharCode = keyChar.toUpperCase().charCodeAt(0) - base;
+                        let newCharCode;
+
+                        if (isEncrypt) {
+                            newCharCode = (charCode + keyCharCode) % 26;
+                        } else {
+                            newCharCode = (charCode - keyCharCode + 26) % 26;
+                        }
+
+                        char = isUpperCase ? String.fromCharCode(newCharCode + base) : String.fromCharCode(newCharCode + a);
+                    }
+                    result += char;
+                }
+                return result;
+            };
+
+            encryptBtn.addEventListener('click', () => {
+                const text = cryptoTextarea.value;
+                const key = cryptoKeyInput.value.trim();
+                cryptoResultTextarea.value = encryptDecrypt(text, key, true);
+            });
+
+            decryptBtn.addEventListener('click', () => {
+                const text = cryptoTextarea.value;
+                const key = cryptoKeyInput.value.trim();
+                cryptoResultTextarea.value = encryptDecrypt(text, key, false);
+            });
+
+            // --- Steganography Section ---
+            const stegoFileInput = document.getElementById('stego-file');
+            const stegoMessageInput = document.getElementById('stego-message');
+            const stegoStatusText = document.getElementById('stego-status');
+            const hideBtn = document.getElementById('hide-btn');
+            const extractBtn = document.getElementById('extract-btn');
+            const canvas = document.getElementById('stego-canvas');
+            const downloadLink = document.getElementById('download-link');
+            const ctx = canvas.getContext('2d');
+
+            let originalImage = new Image();
+
+            // Handle file selection and image rendering
+            stegoFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file || !file.type.startsWith('image/')) {
+                    stegoStatusText.textContent = "[ERROR] Please select a valid image file.";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    originalImage.onload = () => {
+                        canvas.width = originalImage.width;
+                        canvas.height = originalImage.height;
+                        ctx.drawImage(originalImage, 0, 0);
+                        stegoStatusText.textContent = `[SUCCESS] Carrier file loaded: ${file.name}`;
+                        downloadLink.style.display = 'none';
+                        // Show the canvas once an image is loaded
+                        canvas.classList.remove('hidden');
+                    };
+                    originalImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // LSB (Least Significant Bit) encoding and decoding logic
+            const LSB = {
+                encode: (imageData, message) => {
+                    const pixels = imageData.data;
+                    const binaryMessage = LSB.toBinary(message + "###"); // Add a delimiter
+                    if (binaryMessage.length > pixels.length) {
+                        return "[ERROR] Message too long for this image.";
+                    }
+
+                    for (let i = 0; i < binaryMessage.length; i++) {
+                        const bit = binaryMessage[i];
+                        pixels[i] = (pixels[i] & 0xFE) | parseInt(bit);
+                    }
+                    return pixels;
+                },
+                decode: (imageData) => {
+                    const pixels = imageData.data;
+                    let binaryMessage = "";
+                    for (let i = 0; i < pixels.length; i++) {
+                        binaryMessage += (pixels[i] & 1).toString();
+                        if (binaryMessage.endsWith(LSB.toBinary("###"))) {
+                            return LSB.fromBinary(binaryMessage.slice(0, -LSB.toBinary("###").length));
+                        }
+                    }
+                    return "No hidden message found.";
+                },
+                toBinary: (str) => {
+                    return str.split('').map(char => {
+                        return ('0000000' + char.charCodeAt(0).toString(2)).slice(-8);
+                    }).join('');
+                },
+                fromBinary: (str) => {
+                    return str.match(/.{1,8}/g).map(bin => {
+                        return String.fromCharCode(parseInt(bin, 2));
+                    }).join('');
+                }
+            };
+
+            // Event listener to hide data in the image
+            hideBtn.addEventListener('click', () => {
+                if (!originalImage.src) {
+                    stegoStatusText.textContent = "[ERROR] No carrier image selected.";
+                    return;
+                }
+                const message = stegoMessageInput.value;
+                if (!message) {
+                    stegoStatusText.textContent = "[ERROR] No hidden message provided.";
+                    return;
+                }
+
+                ctx.drawImage(originalImage, 0, 0); // Redraw clean image
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const encodedData = LSB.encode(imageData, message);
+
+                if (typeof encodedData === 'string') {
+                    stegoStatusText.textContent = encodedData;
+                    return;
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                
+                downloadLink.style.display = 'inline';
+                downloadLink.href = canvas.toDataURL("image/png");
+                downloadLink.download = "encoded_image.png";
+                stegoStatusText.textContent = "[SUCCESS] Data hidden. Download link activated.";
+            });
+
+            // Event listener to extract data from the image
+            extractBtn.addEventListener('click', () => {
+                if (!originalImage.src) {
+                    stegoStatusText.textContent = "[ERROR] No carrier image selected.";
+                    return;
+                }
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const extractedMessage = LSB.decode(imageData);
+                stegoMessageInput.value = extractedMessage;
+                stegoStatusText.textContent = `[SUCCESS] Extracted message: "${extractedMessage}"`;
+            });
+        });
+    </script>
+</body>
+</html>
